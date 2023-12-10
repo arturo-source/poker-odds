@@ -21,7 +21,6 @@ jobs:
         with:
           files: build/*
           tag_name: ${{ github.event.release.tag_name }}
-          title: Release ${{ github.event.release.tag_name }}
           body: ${{ github.event.release.body }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
