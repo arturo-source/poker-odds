@@ -1,20 +1,16 @@
-name: Generate release-artifacts
+name: build
 
 on:
-  release:
-    types: 
-        - created
+  push:
 
 jobs:
-  generate:
-    name: Generate cross-platform builds
+  xgo:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout the repository
-        uses: actions/checkout@v2
-      - name: Generate build files
-        uses: thatisuday/go-cross-build@v1
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build
+        uses: crazy-max/ghaction-xgo@v3
         with:
-            platforms: 'linux/amd64, darwin/amd64, windows/amd64, linux/arm64, darwin/arm64'
-            name: 'poker-odds'
-            dest: 'dist'
+          prefix: poker-odds
+          targets: windows/amd64,linux/amd64,linux/arm64,darwin/amd64,darwin/arm64
