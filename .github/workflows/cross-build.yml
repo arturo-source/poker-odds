@@ -1,7 +1,9 @@
 name: build
 
 on:
-  push:
+  release:
+    types:
+      - created
 
 jobs:
   xgo:
@@ -14,3 +16,12 @@ jobs:
         with:
           prefix: poker-odds
           targets: windows/amd64,linux/amd64,linux/arm64,darwin/amd64,darwin/arm64
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: build/*
+          tag_name: ${{ github.event.release.tag_name }}
+          title: Release ${{ github.event.release.tag_name }}
+          body: ${{ github.event.release.body }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
