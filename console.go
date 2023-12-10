@@ -181,8 +181,10 @@ func printResults(board poker.Cards, equities map[*poker.Player]equity, nCombina
 		for _, player := range playerPointers {
 			eq := equities[player]
 			handEqPercentage := float64(eq.hands[hk]) / float64(eq.wins+eq.ties) * 100
-			if handEqPercentage < 0.01 || math.IsNaN(handEqPercentage) {
-				fmt.Printf("%7s.", "")
+			if math.IsNaN(handEqPercentage) || handEqPercentage == 0.0 {
+				fmt.Printf("%7s%s", "", colorize(".", Gray))
+			} else if handEqPercentage < 0.1 {
+				fmt.Printf("%4s%s", "", colorize(">0.1", Gray))
 			} else {
 				fmt.Printf("%7.1f%%", handEqPercentage)
 			}
