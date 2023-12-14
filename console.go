@@ -96,6 +96,13 @@ func parseCommandLine() (hands []poker.Cards, board poker.Cards, err error) {
 	// Read all Args input and transform them into cards
 	var allCards []poker.Cards
 	handsStr := flag.Args()
+	if len(handsStr) == 0 {
+		flag.Usage()
+
+		err = fmt.Errorf("at least one hand is needed")
+		return
+	}
+
 	for _, handStr := range handsStr {
 		if len(handStr) != 4 {
 			err = fmt.Errorf("%s hand is not valid, hands must have 2 cards with suit", colorize(handStr, NoSuit))
