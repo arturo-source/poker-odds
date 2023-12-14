@@ -105,6 +105,11 @@ func parseCommandLine() (hands []poker.Cards, board poker.Cards, err error) {
 		return
 	}
 
+	if len(boardStr) > 10 {
+		err = fmt.Errorf("maximum cards in board is 5")
+		return
+	}
+
 	for _, handStr := range handsStr {
 		if strings.Contains(handStr, "-") {
 			flag.Usage()
