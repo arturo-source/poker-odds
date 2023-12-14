@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"math"
+	"runtime"
 	"sort"
 	"time"
 
@@ -38,6 +39,10 @@ func colorize(txt string, color Color) string {
 	const START_CODE = "\033["
 	const END_CODE = "m"
 
+	if disableColor {
+		return txt
+	}
+
 	return fmt.Sprint(START_CODE, color, END_CODE, txt, START_CODE, Reset, END_CODE)
 }
 
@@ -66,6 +71,8 @@ func colorizeCards(cards poker.Cards) string {
 	return fmt.Sprint(spadesStr, clubsStr, heartsStr, diamondsStr)
 }
 
+var disableColor bool
+
 func parseCommandLine() (hands []poker.Cards, board poker.Cards, err error) {
 	flag.Usage = func() {
 		fmt.Println("Available numbers: A K Q J T 9 8 7 6 5 4 3 2")
@@ -78,8 +85,13 @@ func parseCommandLine() (hands []poker.Cards, board poker.Cards, err error) {
 
 	var boardStr string
 	flag.StringVar(&boardStr, "board", "", "The cards with their suits in the board")
+	flag.BoolVar(&disableColor, "no-color", false, "Disable color output (raw data for file saving)")
 
 	flag.Parse()
+
+	if runtime.GOOS == "windows" {
+		disableColor = true
+	}
 
 	// Read all Args input and transform them into cards
 	var allCards []poker.Cards
@@ -159,19 +171,27 @@ func printResults(board poker.Cards, equities map[*poker.Player]equity, nCombina
 
 	// Print player equities
 	fmt.Println()
-	fmt.Printf("%s %14s %15s \n", colorize("hand", Gray), colorize("win", Gray), colorize("tie", Gray))
+	pad := 14
+	if disableColor {
+		pad = 5
+	}
+	fmt.Printf("%s %*s %*s\n", colorize("hand", Gray), pad, colorize("win", Gray), pad+2, colorize("tie", Gray))
 	for _, player := range playerPointers {
 		eq := equities[player]
 		winPercentage := float64(eq.wins) / float64(nCombinations) * 100
 		tiePercentage := float64(eq.ties) / float64(nCombinations) * 100
-		fmt.Printf("%5s %5.1f%% %5.1f%%\n", colorizeCards(player.Hand), winPercentage, tiePercentage)
+		fmt.Printf("%s %5.1f%% %5.1f%%\n", colorizeCards(player.Hand), winPercentage, tiePercentage)
 	}
 
 	// Print hands equities
 	fmt.Println()
 	fmt.Printf("%-16s", "")
+	pad = 26
+	if disableColor {
+		pad = 8
+	}
 	for _, player := range playerPointers {
-		fmt.Printf("%26s", colorizeCards(player.Hand))
+		fmt.Printf("%*s", pad, colorizeCards(player.Hand))
 	}
 
 	fmt.Println()
