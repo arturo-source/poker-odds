@@ -6,6 +6,7 @@ import (
 	"math"
 	"runtime"
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/arturo-source/poker-engine"
@@ -98,12 +99,21 @@ func parseCommandLine() (hands []poker.Cards, board poker.Cards, err error) {
 	handsStr := flag.Args()
 	if len(handsStr) == 0 {
 		flag.Usage()
+		fmt.Println()
 
 		err = fmt.Errorf("at least one hand is needed")
 		return
 	}
 
 	for _, handStr := range handsStr {
+		if strings.Contains(handStr, "-") {
+			flag.Usage()
+			fmt.Println()
+
+			err = fmt.Errorf("arguments go first, hands are placed at the end")
+			return
+		}
+
 		if len(handStr) != 4 {
 			err = fmt.Errorf("%s hand is not valid, hands must have 2 cards with suit", colorize(handStr, NoSuit))
 			return
