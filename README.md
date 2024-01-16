@@ -35,7 +35,5 @@ go build
 Or you can install the program in your GOPATH, to run it as a system program.
 
 ```bash
-git clone https://github.com/arturo-source/poker-odds.git
-cd poker-odds
-go install
+go install github.com/arturo-source/poker-odds@latest
 ```
